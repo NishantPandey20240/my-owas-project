@@ -1,0 +1,81 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f7f4;
+    color: #333;
+}
+
+.step-card, .posture-option, .nav-button, .remove-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.step-card.active {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #60a5fa;
+}
+
+.posture-option {
+    cursor: pointer;
+}
+
+.posture-option.selected {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+    transform: scale(1.05);
+}
+
+.risk-card-1 { border-left: 8px solid #4ade80; }
+.risk-card-2 { border-left: 8px solid #facc15; }
+.risk-card-3 { border-left: 8px solid #f97316; }
+.risk-card-4 { border-left: 8px solid #ef4444; }
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 350px;
+    max-height: 400px;
+}
+
+.nav-button.active {
+    background-color: #3b82f6;
+    color: white;
+}
+
+#pills-tabContent > div {
+    display: none;
+}
+
+#pills-tabContent > div.active {
+    display: block;
+}
+
+#video-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+}
+
+#output-canvas, #input-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

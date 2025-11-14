@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive OWAS Ergonomic Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800"> OWAS Method Software</h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">OWAS Method based software to learn owas method and generate report on ergonomic risks using the Ovako Working Posture Analysis System.</p>
+        </header>
+
+        <nav class="mb-12 flex justify-center bg-white p-2 rounded-xl shadow-sm">
+            <ul class="flex flex-wrap justify-center space-x-2" id="pills-tab" role="tablist">
+                <li><button class="nav-button font-semibold py-2 px-4 rounded-lg active" data-tab="process">The OWAS Process</button></li>
+                <li><button class="nav-button font-semibold py-2 px-4 rounded-lg" data-tab="coder">Posture Coder</button></li>
+                <li><button class="nav-button font-semibold py-2 px-4 rounded-lg" data-tab="analyzer">Frequency Analyzer</button></li>
+                <li><button class="nav-button font-semibold py-2 px-4 rounded-lg" data-tab="ai-analyzer">AI Video Analysis</button></li>
+                <li><button class="nav-button font-semibold py-2 px-4 rounded-lg" data-tab="reporter">Generate Report</button></li>
+            </ul>
+        </nav>
+
+        <main id="pills-tabContent">
+            <div id="process" class="active">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">The 10 Steps of OWAS Analysis</h2>
+                    <p class="mt-2 text-md text-gray-600">This section outlines the complete manual process for conducting an ergonomic risk assessment using OWAS, from initial planning to final re-evaluation after improvements.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <div id="coder">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Interactive Posture Coding</h2>
+                    <p class="mt-2 text-md text-gray-600">Select the worker's posture for each body part to generate the 4-digit OWAS code and determine the immediate risk category for that specific posture.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <div class="space-y-6">
+                            <div id="back-options"></div>
+                            <div id="arms-options"></div>
+                            <div id="legs-options"></div>
+                            <div id="load-options"></div>
+                        </div>
+                    </div>
+                    <div class="sticky top-8">
+                         <div class="bg-white p-6 rounded-2xl shadow-lg">
+                            <h3 class="text-2xl font-bold text-center mb-4 text-gray-800">Analysis Result</h3>
+                            <div class="flex items-center justify-center space-x-2 mb-6">
+                                <span class="text-lg font-medium text-gray-500">Posture Code:</span>
+                                <div id="posture-code" class="flex space-x-1">
+                                    <span class="h-12 w-10 flex items-center justify-center bg-gray-200 text-2xl font-bold rounded-md" id="code-back">?</span>
+                                    <span class="h-12 w-10 flex items-center justify-center bg-gray-200 text-2xl font-bold rounded-md" id="code-arms">?</span>
+                                    <span class="h-12 w-10 flex items-center justify-center bg-gray-200 text-2xl font-bold rounded-md" id="code-legs">?</span>
+                                    <span class="h-12 w-10 flex items-center justify-center bg-gray-200 text-2xl font-bold rounded-md" id="code-load">?</span>
+                                </div>
+                            </div>
+                            <div id="risk-result" class="bg-gray-50 p-4 rounded-lg text-center">
+                                <p class="text-gray-500">Select a posture for each body part to see the risk analysis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="analyzer">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Body Part Risk from Frequency</h2>
+                    <p class="mt-2 text-md text-gray-600">Select specific stressful postures and use the sliders to see how the duration of each posture impacts the overall task risk profile.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">Add Posture to Analyze</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="body-part-select" class="block text-sm font-medium text-gray-700">Body Part</label>
+                                <select id="body-part-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"></select>
+                            </div>
+                             <div>
+                                <label for="posture-select" class="block text-sm font-medium text-gray-700">Specific Posture</label>
+                                <select id="posture-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"></select>
+                            </div>
+                            <button id="add-analyzer-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Add Posture Slider</button>
+                        </div>
+                        <hr class="my-6">
+                        <div id="analyzer-sliders-container" class="space-y-6">
+                           <p class="text-center text-gray-500">No postures added for analysis yet.</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-2xl font-bold text-center mb-4">Risk Profile Summary</h3>
+                        <div class="chart-container">
+                            <canvas id="frequencyRiskChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ai-analyzer">
+                 <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Calculation by AI Video Expert</h2>
+                    <p class="mt-2 text-md text-gray-600">Upload a video of the work task. The AI will analyze the worker's posture frame-by-frame and automatically calculate the OWAS frequency report.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">1. Setup and Upload</h3>
+                        <div class="space-y-4">
+                            <div>
+                               <label for="ai-load-select" class="block text-sm font-medium text-gray-700">Select Load Force</label>
+                               <select id="ai-load-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                   <option value="1">1: Load < 10 kg</option>
+                                   <option value="2">2: 10 kg &lt;= Load < 20 kg</option>
+                                   <option value="3">3: Load >= 20 kg</option>
+                               </select>
+                           </div>
+                           <div>
+                               <label for="video-upload" class="block text-sm font-medium text-gray-700">Upload Video File</label>
+                               <input type="file" id="video-upload" accept="video/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                           </div>
+                        </div>
+                        
+                        <div id="video-container" class="my-4 rounded-lg overflow-hidden hidden bg-black">
+                           <video id="input-video" class="w-full h-auto" playsinline style="display: none;"></video>
+                           <canvas id="output-canvas"></canvas>
+                        </div>
+
+                        <button id="analyze-video-btn" class="w-full mt-4 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-400" disabled>
+                            Analyze Video
+                        </button>
+                         <div id="ai-status" class="mt-4 text-center"></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold mb-4">2. Analysis Results</h3>
+                        <div id="ai-summary" class="mb-4"></div>
+                        <div id="ai-results-container" class="text-gray-500 text-center">
+                            <p>Results will be displayed here after video analysis is complete.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reporter">
+               <div class="text-center mb-8">
+                   <h2 class="text-3xl font-bold text-gray-800">Generate PDF Report</h2>
+                   <p class="mt-2 text-md text-gray-600">Fill in the details below and click generate to download a PDF summary of your analysis.</p>
+               </div>
+               <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+                   <div class="space-y-6">
+                       <div>
+                           <label for="task-name" class="block text-sm font-medium text-gray-700">Task Name / Description</label>
+                           <input type="text" id="task-name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                       </div>
+                       <div>
+                           <label for="analyst-name" class="block text-sm font-medium text-gray-700">Analyst Name</label>
+                           <input type="text" id="analyst-name" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                       </div>
+                       <div>
+                           <label for="report-notes" class="block text-sm font-medium text-gray-700">General Notes & Observations</label>
+                           <textarea id="report-notes" rows="4" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Worker reported discomfort in lower back..."></textarea>
+                       </div>
+                       
+                       <div class="pt-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                               <button id="generate-ai-report" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-gray-400">
+                                   Generate AI Report
+                               </button>
+                               <button id="generate-manual-report" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400">
+                                   Generate Manual Report
+                               </button>
+                           </div>
+                       </div>
+
+                   </div>
+               </div>
+           </div>
+        </main>
+    </div>
+    <script src="main.js" type="module"></script>
+</body>
+</html>
+
